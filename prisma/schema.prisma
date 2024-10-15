@@ -13,14 +13,15 @@ enum UserRole {
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
-    title     String
-    content   String
-    published Boolean  @default(false)
-    authorId  Int
-    author    User     @relation(fields: [authorId], references: [id]) // one to meny relationship with this model > type
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id           Int            @id @default(autoincrement())
+    title        String
+    content      String
+    published    Boolean        @default(false)
+    authorId     Int
+    author       User           @relation(fields: [authorId], references: [id]) // one to meny relationship with this model > type
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    postCategory PostCategory[] //many to many relationship with this model > automatically generated
 
     @@map("posts")
 }
@@ -29,7 +30,7 @@ model User {
     id       Int      @id @default(autoincrement())
     username String   @unique
     email    String   @unique
-    role     UserRole
+    role     UserRole @default(user)
     profile  Profile? //one to one relationship with this model > automatically generated
     Post     Post[] // one to many relationship with this model > automatically generated
 
@@ -46,8 +47,19 @@ model Profile {
 }
 
 model Category {
-    id   Int    @id @default(autoincrement())
-    name String
+    id           Int            @id @default(autoincrement())
+    name         String
+    postCategory PostCategory[] //many to many relationship with this model > automatically generated
 
     @@map("categories")
+}
+
+model PostCategory {
+    postId     Int
+    post       Post     @relation(fields: [postId], references: [id]) //many to many relationship with this model > type
+    categoryId Int
+    category   Category @relation(fields: [categoryId], references: [id]) //many to many relationship with this model > type
+
+    @@id([postId, categoryId])
+    @@map("post_category")
 }
